@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        .flash-popup {
+            position: fixed;
+            top: 50%;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        body{
+            justify-content: center;
+            align-items: center;
+        }
+        .login{
+            padding:20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            justify-content: center;
+            background-color: aqua;
+        }
+        h3{
+            text-align: center;
+            margin-bottom: 20px;
+            color: blue;
+        }
+        input[type='text']{
+            width: 100%;
+            max-width: 100px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-popup flash-message {{messages[-1][0]}}">
+            {{messages[-1][1]}}
+        </div>
+        <script>
+            setTimeout(function () {
+                var flashMessage = document.querySelector('.flash-popup');
+                if (flashMessage) {
+                    flashMessage.remove();
+                }
+            }, 5000) // 5000ms = 5sec
+        </script>
+        {%endif%}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="login">
+                <h3>User Login</h3>
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button>login</button>
+
+                <div>
+                    <a href="signup">New User</a>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+</body>
+
+</html>
