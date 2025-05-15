@@ -23,3 +23,16 @@ class User(db.Model,UserMixin):
 
             else:
                 print('Admin already exists')
+
+class Category(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String,nullable=False)
+
+    def can_be_deleted(self):
+        return len(self.product) == 0
+
+class Products(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String,nullable=False)
+    category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
+    category = db.relationship('Category',backref=db.backref('product',lazy=True))

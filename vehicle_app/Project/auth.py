@@ -3,7 +3,7 @@ from flask_login import login_user,logout_user,login_required,current_user
 from .models import User
 from . import db
 import os
-
+import re
 
 auth = Blueprint('auth',__name__)
 
@@ -20,19 +20,31 @@ def signup():
             flash('Password must be greater than 4 characters',category='error')
             return render_template('signup.html')
 
-        if username_exists:
-            print("Username already exists")
-            flash('username already exists',category='error')
-            return render_template('signup.html')
+
+        has_upper = any(c.isupper() for c in password)
+        has_lower = any(c.islower() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        patterns = './?@#$%^&*()'
+        has_patterns = any(c in patterns for c in password)
+
+
+
+        if has_upper and has_lower and has_digit and has_patterns and len(password) >= 8:
+            if username_exists:
+                print("Username already exists")
+                flash('username already exists',category='error')
+                return render_template('signup.html')
+            else:
+                newUser = User(name=name,username=username,password=password,   role=1)
+                db.session.add(newUser)
+                db.session.commit()
+
+                flash('account created',category='success')
+
+                return render_template('login.html',user=current_user)
         else:
-            newUser = User(name=name,username=username,password=password,role=1)
-            db.session.add(newUser)
-            db.session.commit()
-
-            flash('account created',category='success')
-
-            return render_template('login.html',user=current_user)
-
+            flash('passowrd should be of 8 length',category='error')
+            return render_template('signup.html')
     else:
         return render_template('signup.html')
 
