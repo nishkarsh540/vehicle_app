@@ -27,12 +27,13 @@ class User(db.Model,UserMixin):
 class Category(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String,nullable=False)
+    products = db.relationship('Products',backref='category',cascade='all, delete-orphan',lazy=True)
 
     def can_be_deleted(self):
         return len(self.product) == 0
 
 class Products(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String,nullable=False)
+    name = db.Column(db.String,nullable=False, unique=True)
     category_id = db.Column(db.Integer,db.ForeignKey('category.id'))
-    category = db.relationship('Category',backref=db.backref('product',lazy=True))
+    

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Add product</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+        </table>
+
+        <tbody>
+            <form method="POST" action="{{url_for('main.manage_product')}}">
+                <td><input type="text" name="product_name" required></td>
+                <td><select name="category_id" required >
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                    {% endfor %}
+                </select></td>
+                <td><button type="submit" name="add_product">Add Product</button></td>
+            </form>
+        </tbody>
+    </div>
+</body>
+</html>

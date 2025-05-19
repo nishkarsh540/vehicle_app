@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request,redirect,url_for,abort,flash
 from . import db
-from .models import User,Category
+from .models import User,Category, Products
 from flask_login import login_required,current_user
 
 main = Blueprint('main',__name__)
@@ -25,10 +25,9 @@ def manage_cat():
         elif 'remove_category' in request.form:
             category_id = request.form.get('category_id')
             category = Category.query.get(category_id)
-
             if category:
-                db.session.delete(category)
-                db.session.commit()
+                    db.session.delete(category)
+                    db.session.commit()
             else:
                 flash('Category already exists',category='error')
         elif 'edit_category' in request.form:
@@ -57,13 +56,55 @@ def manage_cat():
 
 
 
+@main.route('/admin/manage_product',methods=['GET','POST'])
+@login_required
+def manage_product():
+    if request.method=='POST':
+        if 'add_product' in request.form:
+            product_name = request.form.get('product_name')
+            category_id = request.form.get('category_id')
 
-def delete_category(category_id):
-    category = Category.query.get(category_id)
 
-    if not category.can_be_deleted():
-        return "cannot delete category with existing products", 400
-    db.session.delete(category)
-    db.session.commit()
+            new_product = Products(name=product_name,category_id=category_id)
 
-    return "category deleted successfully", 200
+            db.session.add(new_product)
+            db.session.commit()
+
+
+    categories = Category.query.all()
+    products = Products.query.all()
+
+    return render_template('manage_prod.html',categories=categories,products=products)
+
+
+import matplotlib.pyplot as plt
+import matplotlib 
+matplotlib.use('Agg')
+
+@main.route('/user-chart')
+def user_chart():
+    users = User.query.all()
+
+    role_counts={}
+
+    for user in users:
+        if user.role == 0:
+            role='admin'
+        else:
+            role='user'
+        role_counts[role] = role_counts.get(role,0) + 1
+
+    roles = list(role_counts.keys())
+    counts = list(role_counts.values())
+
+    plt.figure(figsize=(10,6))  
+    plt.bar(roles,counts,color='blue',alpha=0.7)
+    plt.xlabel('Roles')
+    plt.ylabel('Number of Users')
+    plt.title('Number of users by role')
+    plt.tight_layout()
+
+    chart_path = 'Project/static/user_chart.png'
+    plt.savefig(chart_path)
+    plt.close()
+    return render_template('user_chart.html',chart_path=chart_path)
